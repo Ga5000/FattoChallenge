@@ -1,8 +1,8 @@
 
-function Button({text, onClick}){ // onClick --> function
+function Button({text, image, onClick}){ // onClick --> function
     return(
         <button onClick={onClick}>
-            {text}
+            {text == "" ? <img src={image} ></img> : text}
         </button>
     );
 }
