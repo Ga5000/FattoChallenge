@@ -7,6 +7,7 @@ import com.api.ga5000.fattochallenge.dto.TaskResponseDto;
 import com.api.ga5000.fattochallenge.model.Task;
 import com.api.ga5000.fattochallenge.repository.TaskRepository;
 import com.api.ga5000.fattochallenge.service.interfaces.ITaskService;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,10 @@ public class TaskService implements ITaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto addTask(TaskRequestDto taskRequestDto){
+    public TaskResponseDto addTask(TaskRequestDto taskRequestDto) throws EntityExistsException {
+        taskRepository.findByNameIgnoreCase(taskRequestDto.name())
+                .ifPresent(task -> {throw new EntityExistsException("Uma tarefa com este nome já existe");});
+
         var task = new Task();
         Integer maxOrder = taskRepository.findMaxPresentationOrder();
         Integer newOrder = (maxOrder == null) ? 1 : maxOrder + 1;
@@ -43,7 +47,11 @@ public class TaskService implements ITaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto updateTask(UUID taskId, TaskRequestDto taskRequestDto) throws EntityNotFoundException {
+    public TaskResponseDto updateTask(UUID taskId, TaskRequestDto taskRequestDto) throws EntityNotFoundException,
+                                                                                        EntityExistsException {
+        taskRepository.findByNameIgnoreCase(taskRequestDto.name())
+                .ifPresent(task -> {throw new EntityExistsException("Uma tarefa com este nome já existe");});
+
         Task taskToUpdate = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
 

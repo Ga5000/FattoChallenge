@@ -1,6 +1,8 @@
 package com.api.ga5000.fattochallenge.repository;
 
 import com.api.ga5000.fattochallenge.model.Task;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +23,6 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     List<Task> findByPresentationOrderGreaterThan(Integer presentationOrder);
 
     Optional<Task> findByPresentationOrder(Integer presentationOrder);
+
+    Optional<Task> findByNameIgnoreCase(String name);
 }
