@@ -29,8 +29,8 @@ public class TaskService implements ITaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto addTask(TaskRequestDto taskRequestDto) throws EntityExistsException {
-        taskRepository.findByNameIgnoreCase(taskRequestDto.name())
+    public TaskResponseDto addTask(TaskRequestDto taskRequestDto) throws EntityExistsException{
+        taskRepository.findByName(taskRequestDto.name())
                 .ifPresent(task -> {throw new EntityExistsException("Uma tarefa com este nome já existe");});
 
         var task = new Task();
@@ -47,13 +47,18 @@ public class TaskService implements ITaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto updateTask(UUID taskId, TaskRequestDto taskRequestDto) throws EntityNotFoundException,
-                                                                                        EntityExistsException {
-        taskRepository.findByNameIgnoreCase(taskRequestDto.name())
-                .ifPresent(task -> {throw new EntityExistsException("Uma tarefa com este nome já existe");});
-
+    public TaskResponseDto updateTask(UUID taskId, TaskRequestDto taskRequestDto)
+            throws EntityNotFoundException, EntityExistsException{
         Task taskToUpdate = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
+
+        if (!taskToUpdate.getName().equals(taskRequestDto.name())) {
+            taskRepository.findByName(taskRequestDto.name())
+                    .ifPresent(task -> {
+                        throw new EntityExistsException("Uma Tarefa com este nome já existe");
+                    });
+        }
+
 
         taskToUpdate.updateFromDto(taskRequestDto);
         taskRepository.save(taskToUpdate);
@@ -78,7 +83,6 @@ public class TaskService implements ITaskService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Task> taskPage = taskRepository.findAllByOrderByPresentationOrderAsc(pageable);
 
-
         Page<TaskResponseDto> taskResponseDtoPage = taskPage.map(Mapper::toTaskResponseDto);
 
         return new PaginatedResponseDTO<>(
@@ -100,10 +104,8 @@ public class TaskService implements ITaskService {
         if (moveUp) {
             if (currentOrder == 1) return;
 
-
             Task taskAbove = taskRepository.findByPresentationOrder(currentOrder - 1)
                     .orElseThrow(() -> new EntityNotFoundException("Tarefa acima não encontrada"));
-
 
             task.setPresentationOrder(currentOrder - 1);
             taskAbove.setPresentationOrder(currentOrder);
@@ -117,20 +119,18 @@ public class TaskService implements ITaskService {
 
             if (taskBelow == null) return;
 
-
             task.setPresentationOrder(currentOrder + 1);
             taskBelow.setPresentationOrder(currentOrder);
-
 
             taskRepository.save(task);
             taskRepository.save(taskBelow);
         }
     }
 
-    private void updatePresentationOrder(Integer presentationOrder){
+    private void updatePresentationOrder(Integer presentationOrder) {
         List<Task> tasksToUpdate = taskRepository.findByPresentationOrderGreaterThan(presentationOrder);
 
-        for(Task t : tasksToUpdate){
+        for (Task t : tasksToUpdate) {
             t.setPresentationOrder(t.getPresentationOrder() - 1);
         }
 

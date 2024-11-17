@@ -3,13 +3,15 @@ package com.api.ga5000.fattochallenge.controller;
 import com.api.ga5000.fattochallenge.dto.PaginatedResponseDTO;
 import com.api.ga5000.fattochallenge.dto.TaskRequestDto;
 import com.api.ga5000.fattochallenge.dto.TaskResponseDto;
-import com.api.ga5000.fattochallenge.model.Task;
 import com.api.ga5000.fattochallenge.service.TaskService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -49,7 +51,7 @@ public class TaskController {
     public ResponseEntity<Object> deleteTask(@RequestParam UUID taskId) {
         try{
             taskService.deleteTask(taskId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Tarefa deletada com sucesso");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }catch (EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
@@ -72,4 +74,12 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String customMessage = "Dados Inválidos: Por favor cheque os dados e tente novamente.";
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(customMessage);
+    }
+
+
 }

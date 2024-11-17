@@ -8,8 +8,7 @@ public class Mapper {
                 task.getTaskId(),
                 task.getName(),
                 task.getCost(),
-                task.getLimitDate(),
-                task.getPresentationOrder()
+                task.getLimitDate()
         );
     }
 }
