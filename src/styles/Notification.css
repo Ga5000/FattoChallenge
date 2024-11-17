@@ -1,0 +1,74 @@
+.message-SUCCESS, .message-WARNING, .message-FAILED {
+  position: fixed;
+  top: 0;  /* Ajuste para mais perto do topo */
+  left: 50%;
+  transform: translateX(-50%); /* Move para o centro exato da tela */
+  display: flex;
+  align-items: center;
+  background-color: #000000;
+  padding: 15px 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  z-index: 2000; 
+  width: 350px;
+  opacity: 1;
+  font-size: 16px;
+  color: #fff;
+  animation: slideIn 0.5s ease-in-out, fadeOut 0.5s ease-in-out 3.5s forwards; 
+  transition: all 0.3s ease; 
+}
+
+.message-SUCCESS {
+  border-left: 6px solid #28a745;
+}
+
+.message-WARNING {
+  border-left: 6px solid #ffc107;
+}
+
+.message-FAILED {
+  border-left: 6px solid #dc3545;
+}
+
+.message-SUCCESS img, .message-WARNING img, .message-FAILED img {
+  margin-right: 20px;
+  width: 25px;
+  height: 25px;
+}
+
+.message-SUCCESS .notification-text, .message-WARNING .notification-text, .message-FAILED .notification-text {
+  flex-grow: 1;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(-50%) translateY(-100%); 
+  }
+  100% {
+    transform: translateX(-50%) translateY(0); 
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);  
+    
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%)
+  }
+}
+
+.message-SUCCESS,
+.message-WARNING,
+.message-FAILED {
+  animation: none;
+}
+
+.message-SUCCESS.show,
+.message-WARNING.show,
+.message-FAILED.show {
+  animation: slideIn 0.5s ease-in-out, fadeOut 0.5s ease-in-out 3.5s forwards; 
+}
