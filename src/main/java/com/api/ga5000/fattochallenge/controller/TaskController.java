@@ -3,6 +3,7 @@ package com.api.ga5000.fattochallenge.controller;
 import com.api.ga5000.fattochallenge.dto.PaginatedResponseDTO;
 import com.api.ga5000.fattochallenge.dto.TaskRequestDto;
 import com.api.ga5000.fattochallenge.dto.TaskResponseDto;
+import com.api.ga5000.fattochallenge.dto.ValidationErrorDTO;
 import com.api.ga5000.fattochallenge.service.TaskService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -10,17 +11,17 @@ import jakarta.validation.Valid;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
-
 
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
@@ -28,31 +29,31 @@ public class TaskController {
 
     @PostMapping("/add")
     public ResponseEntity<Object> addTask(@RequestBody @Valid TaskRequestDto taskRequestDto) {
-        try{
+        try {
             return ResponseEntity.status(HttpStatus.OK).body(taskService.addTask(taskRequestDto));
-        }catch (EntityExistsException e){
+        } catch (EntityExistsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PutMapping("/update")
     public ResponseEntity<Object> updateTask(@RequestParam UUID taskId,
-                                                      @RequestBody @Valid TaskRequestDto taskRequestDto) {
-        try{
-            return ResponseEntity.status(HttpStatus.OK).body(taskService.updateTask(taskId,taskRequestDto));
-        }catch (EntityNotFoundException e){
+                                             @RequestBody @Valid TaskRequestDto taskRequestDto) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(taskService.updateTask(taskId, taskRequestDto));
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }catch (EntityExistsException e){
+        } catch (EntityExistsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Object> deleteTask(@RequestParam UUID taskId) {
-        try{
+        try {
             taskService.deleteTask(taskId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
@@ -66,19 +67,22 @@ public class TaskController {
     }
 
     @PostMapping("/move")
-    public ResponseEntity<Object> moveTask(@RequestParam UUID taskId, @RequestParam boolean moveUp){
-        try{
-            taskService.moveTask(taskId,moveUp);
+    public ResponseEntity<Object> moveTask(@RequestParam UUID taskId, @RequestParam boolean moveUp,
+                                           @RequestParam int pageNumber, @RequestParam int pageSize) {
+        try {
+            taskService.moveTask(taskId, moveUp, pageNumber, pageSize);
             return ResponseEntity.status(HttpStatus.OK).build();
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<ValidationErrorDTO>> handleValidationException(MethodArgumentNotValidException ex) {
+        List<ValidationErrorDTO> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> new ValidationErrorDTO(fieldError.getDefaultMessage()))
+                .collect(Collectors.toList());
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String customMessage = "Dados Inválidos: Por favor cheque os dados e tente novamente.";
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(customMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
 

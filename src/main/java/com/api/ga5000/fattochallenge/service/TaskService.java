@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -95,37 +96,70 @@ public class TaskService implements ITaskService {
 
     @Transactional
     @Override
-    public void moveTask(UUID taskId, boolean moveUp) {
+    public void moveTask(UUID taskId, boolean moveUp, int pageNumber, int pageSize) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
 
         Integer currentOrder = task.getPresentationOrder();
 
         if (moveUp) {
-            if (currentOrder == 1) return;
+            if (currentOrder == 1 && pageNumber == 0) return;
 
-            Task taskAbove = taskRepository.findByPresentationOrder(currentOrder - 1)
-                    .orElseThrow(() -> new EntityNotFoundException("Tarefa acima não encontrada"));
-
-            task.setPresentationOrder(currentOrder - 1);
-            taskAbove.setPresentationOrder(currentOrder);
-
-            taskRepository.save(task);
-            taskRepository.save(taskAbove);
-
+            if(currentOrder == 1){
+                Page<Task> previousPage = taskRepository.findAllByOrderByPresentationOrderAsc
+                        (PageRequest.of(pageNumber - 1, pageSize,
+                                Sort.by("presentationOrder").ascending()));
+                if (previousPage.isEmpty()) return;
+                Task lastTaskOnPrevPage = previousPage.getContent().get(previousPage.getContent().size() - 1);
+                swapOrders(task, lastTaskOnPrevPage);
+            }else {
+                Task taskAbove = taskRepository.findByPresentationOrder(currentOrder - 1)
+                        .orElseThrow(() -> new EntityNotFoundException("Tarefa acima não encontrada"));
+                swapOrders(task, taskAbove);
+            }
         } else {
-            Task taskBelow = taskRepository.findByPresentationOrder(currentOrder + 1)
-                    .orElse(null);
+            Page<Task> currentPage = taskRepository.findAllByOrderByPresentationOrderAsc(
+                    PageRequest.of(pageNumber, pageSize,
+                            Sort.by("presentationOrder").ascending()));
+            int totalPages = currentPage.getTotalPages();
 
-            if (taskBelow == null) return;
+            if (currentOrder == currentPage.getContent().size() && pageNumber < totalPages - 1) {
+                Page<Task> nextPage = taskRepository.findAllByOrderByPresentationOrderAsc(
+                        PageRequest.of(pageNumber + 1, pageSize,
+                                Sort.by("presentationOrder").ascending()));
+                if (nextPage.isEmpty()) return;
 
-            task.setPresentationOrder(currentOrder + 1);
-            taskBelow.setPresentationOrder(currentOrder);
+                Task firstTaskOnNextPage = nextPage.getContent().get(0);
+                swapOrders(task, firstTaskOnNextPage);
+            } else {
+                Task taskBelow = taskRepository.findByPresentationOrder(currentOrder + 1)
+                        .orElse(null);
+                if (taskBelow == null && !(pageNumber == 0 && currentOrder == 1)) return;
+                if (taskBelow == null) {
+                    Page<Task> nextPage = taskRepository.findAllByOrderByPresentationOrderAsc(
+                            PageRequest.of(pageNumber + 1, pageSize,
+                                    Sort.by("presentationOrder").ascending()));
+                    if (nextPage.isEmpty()) return;
 
-            taskRepository.save(task);
-            taskRepository.save(taskBelow);
+                    Task firstTaskOnNextPage = nextPage.getContent().get(0);
+                    swapOrders(task, firstTaskOnNextPage);
+                } else {
+                    swapOrders(task, taskBelow);
+                }
+            }
         }
     }
+
+    private void swapOrders(Task task1, Task task2) {
+        Integer tempOrder = task1.getPresentationOrder();
+        task1.setPresentationOrder(task2.getPresentationOrder());
+        task2.setPresentationOrder(tempOrder);
+
+        taskRepository.save(task1);
+        taskRepository.save(task2);
+    }
+
+
 
     private void updatePresentationOrder(Integer presentationOrder) {
         List<Task> tasksToUpdate = taskRepository.findByPresentationOrderGreaterThan(presentationOrder);
