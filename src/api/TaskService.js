@@ -119,5 +119,19 @@ const deleteTask =  async (taskId) => {
     }
 }
 
+const dragTask = async (taskId, task2Id) => { // taskId = task that will be dragged, task2Id = task that is under the dragged task when the dragged task is placed
+  try{
+    const response =  await apiClient.post(`/tasks/drag?taskId=${taskId}&task2Id=${task2Id}`);
+    return {
+      text : "Tarefa movida com sucesso",
+      type : messageType.SUCCESS
+    };
+  }catch(error){
+    return {
+      text: "Algo deu errado ao mover essa tarefa, tente novamente.",
+      type: messageType.FAILED,
+    };
+  }
+};
 
-export { getTasks, moveTask, saveTask, deleteTask};
+export { getTasks, moveTask, saveTask, deleteTask, dragTask};

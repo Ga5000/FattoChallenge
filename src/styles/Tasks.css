@@ -1,0 +1,143 @@
+.tasks-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+  height: 100vh;
+  max-width: 3500px;
+}
+
+.task-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  background: #d6d6d6;
+  position: relative;
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  margin-bottom: 80px;
+  right: 10px;
+}
+
+.btn-group .update-btn,
+.btn-group .delete-btn {
+  border: none;
+  border-radius: 50%;
+  margin-left: 30px;
+  cursor: pointer;
+  margin-top: 100px;
+}
+
+.update-btn {
+  background-color: #0056b3;
+  transition: all 0.3s ease;
+}
+
+.update-btn img{
+  width: 40px;
+  height: auto;
+}
+.update-btn:hover {
+  background-color: #003d80;
+}
+
+.delete-btn {
+  background-color: #ff0000;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #cc0000;
+}
+
+
+.add-task-btn {
+  justify-self: center;
+  margin-top: 20px;
+  width: 50%;
+  border: none;
+  border-radius: 20px;
+  font-size: 3.5rem;
+  background-color: #005a29;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 150px;
+}
+
+
+.add-task-btn:hover {
+  background-color: #003d1d;
+}
+
+.page-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding: 10px 20px;
+  z-index: 11;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.page-size-selector label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.page-size-selector select {
+  padding: 5px 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-left: 10px;
+}
+
+.page {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.page button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.page button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.page-data {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #444;
+}

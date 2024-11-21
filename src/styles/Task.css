@@ -1,0 +1,99 @@
+.task-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 350px;
+    height: auto;
+    background-color: #f4f7fc;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    cursor: grabbing;
+}
+
+.task-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    width: 100%;
+}
+
+.task-data {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.task-cost {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 500;
+    margin-bottom: 6px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.task-cost.-thousand {
+    color: #d9534f;
+    font-weight: bold;
+}
+
+.task-limitDate {
+    font-size: 1rem;
+    color: #999;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.move-btns {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding-top: 10px;
+}
+
+.move-btns button {
+    border: none;
+    border-radius: 50%;
+    background-color: #007bff;
+    padding: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 40px;
+    height: 40px;
+}
+
+.move-btns button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.move-btns button:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+.move-btns button img {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s ease;
+}
+
+.move-btns button:hover img {
+    transform: scale(1.2);
+}

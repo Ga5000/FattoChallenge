@@ -1,0 +1,66 @@
+.message-success,
+.message-warning,
+.message-failed {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  min-width: 300px;
+  max-width: 400px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.3s forwards, fadeOut 0.3s 2.7s forwards;
+  z-index: 1000;
+}
+
+.message-success {
+  background-color: #4caf50;
+}
+
+.message-warning {
+  background-color: #ff9800;
+}
+
+.message-failed {
+  background-color: #f44336;
+}
+
+.message-img {
+  width: 24px;
+  height: 24px;
+}
+
+.message-text {
+  margin: 0;
+  flex: 1;
+  line-height: 1.5;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
