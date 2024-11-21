@@ -26,4 +26,6 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     Optional<Task> findByName(String name);
 
+
+    List<Task> findByPresentationOrderBetween(Integer stackedTaskPresentationOrder, Integer taskToMovePresentationOrder);
 }

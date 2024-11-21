@@ -96,7 +96,7 @@ public class TaskService implements ITaskService {
 
     @Transactional
     @Override
-    public void moveTask(UUID taskId, boolean moveUp, int pageNumber, int pageSize) {
+    public void moveTask(UUID taskId, boolean moveUp, int pageNumber, int pageSize) throws EntityNotFoundException {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
 
@@ -149,6 +149,47 @@ public class TaskService implements ITaskService {
             }
         }
     }
+
+    @Transactional
+    @Override
+    public void dragTask(UUID taskId, UUID task2Id) throws EntityNotFoundException {
+        Task taskToMove = taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
+
+        Integer taskToMovePresentationOrder = taskToMove.getPresentationOrder();
+        Task stackedTask = taskRepository.findById(task2Id)
+                .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
+
+        Integer stackedTaskPresentationOrder = stackedTask.getPresentationOrder();
+
+        if (taskToMovePresentationOrder > stackedTaskPresentationOrder) {
+
+            List<Task> tasksToShift = taskRepository.findByPresentationOrderBetween(
+                    stackedTaskPresentationOrder, taskToMovePresentationOrder - 1);
+
+            for (Task task : tasksToShift) {
+                task.setPresentationOrder(task.getPresentationOrder() + 1);
+                taskRepository.save(task);
+            }
+
+            taskToMove.setPresentationOrder(stackedTaskPresentationOrder);
+        } else if (taskToMovePresentationOrder < stackedTaskPresentationOrder) {
+
+            List<Task> tasksToShift = taskRepository.findByPresentationOrderBetween(
+                    taskToMovePresentationOrder + 1, stackedTaskPresentationOrder);
+
+            for (Task task : tasksToShift) {
+                task.setPresentationOrder(task.getPresentationOrder() - 1);
+                taskRepository.save(task);
+            }
+
+            taskToMove.setPresentationOrder(stackedTaskPresentationOrder);
+        }
+
+        taskRepository.save(taskToMove);
+    }
+
+
 
     private void swapOrders(Task task1, Task task2) {
         Integer tempOrder = task1.getPresentationOrder();

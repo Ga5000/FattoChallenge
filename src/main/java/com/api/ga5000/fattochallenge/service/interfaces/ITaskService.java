@@ -13,5 +13,6 @@ public interface ITaskService {
     TaskResponseDto updateTask(UUID taskId, TaskRequestDto taskRequestDto) throws EntityNotFoundException, EntityExistsException;
     void deleteTask(UUID taskId) throws EntityNotFoundException;
     PaginatedResponseDTO<TaskResponseDto> getAllTasks(int pageNumber, int pageSize);
-    void moveTask(UUID taskId, boolean moveUp, int pageNumber, int pageSize);
+    void moveTask(UUID taskId, boolean moveUp, int pageNumber, int pageSize) throws EntityNotFoundException;
+    void dragTask(UUID taskId, UUID task2Id) throws EntityNotFoundException;
 }

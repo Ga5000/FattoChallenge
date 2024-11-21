@@ -76,6 +76,16 @@ public class TaskController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @PostMapping("/drag")
+    public ResponseEntity<Object> dragTask(@RequestParam UUID taskId, @RequestParam UUID task2Id){
+        try {
+            taskService.dragTask(taskId, task2Id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<ValidationErrorDTO>> handleValidationException(MethodArgumentNotValidException ex) {
         List<ValidationErrorDTO> errors = ex.getBindingResult().getFieldErrors().stream()
