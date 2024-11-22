@@ -1,9 +1,0 @@
-{
-    "rewrites": [
-      {
-        "source": "/tasks/(.*)",
-        "destination": "http://44.210.114.62:8080/api/$1"  
-      }
-    ]
-  }
-  
