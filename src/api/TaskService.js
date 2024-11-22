@@ -2,7 +2,7 @@ import axios from "axios";
 import messageType from "../constants/messageType";
 
 const apiClient = axios.create({
-    baseURL: 'https://44.210.114.62:8080',
+    baseURL: 'https://44.210.114.62:443',
     timeout: 5000
   });
 
