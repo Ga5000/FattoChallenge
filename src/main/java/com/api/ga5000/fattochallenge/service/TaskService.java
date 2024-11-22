@@ -103,26 +103,32 @@ public class TaskService implements ITaskService {
         Integer currentOrder = task.getPresentationOrder();
 
         if (moveUp) {
+            // se a tarefa for a primeira da página e a página for a primeira página
             if (currentOrder == 1 && pageNumber == 0) return;
 
+
             if(currentOrder == 1){
+                // armazena as tarefas da página passada e as orderna pelo campo presentaionOrder
                 Page<Task> previousPage = taskRepository.findAllByOrderByPresentationOrderAsc
                         (PageRequest.of(pageNumber - 1, pageSize,
                                 Sort.by("presentationOrder").ascending()));
                 if (previousPage.isEmpty()) return;
+                //armazena o último elemento da página passada
                 Task lastTaskOnPrevPage = previousPage.getContent().get(previousPage.getContent().size() - 1);
                 swapOrders(task, lastTaskOnPrevPage);
-            }else {
+            }else { //caso a tarefa a ser movida não seja a primeira da página
+                //armazena a tarefa a cima da tarefa que será movida
                 Task taskAbove = taskRepository.findByPresentationOrder(currentOrder - 1)
                         .orElseThrow(() -> new EntityNotFoundException("Tarefa acima não encontrada"));
                 swapOrders(task, taskAbove);
             }
-        } else {
+        } else { // caso moveUp == false, a tarefa será movida para baixo (moveDown)
             Page<Task> currentPage = taskRepository.findAllByOrderByPresentationOrderAsc(
                     PageRequest.of(pageNumber, pageSize,
                             Sort.by("presentationOrder").ascending()));
             int totalPages = currentPage.getTotalPages();
 
+            // se a tarefa que será movida for a última da página e a página não for a última página
             if (currentOrder == currentPage.getContent().size() && pageNumber < totalPages - 1) {
                 Page<Task> nextPage = taskRepository.findAllByOrderByPresentationOrderAsc(
                         PageRequest.of(pageNumber + 1, pageSize,
@@ -131,7 +137,7 @@ public class TaskService implements ITaskService {
 
                 Task firstTaskOnNextPage = nextPage.getContent().get(0);
                 swapOrders(task, firstTaskOnNextPage);
-            } else {
+            } else { // se a condição acima for false
                 Task taskBelow = taskRepository.findByPresentationOrder(currentOrder + 1)
                         .orElse(null);
                 if (taskBelow == null && !(pageNumber == 0 && currentOrder == 1)) return;
@@ -157,13 +163,14 @@ public class TaskService implements ITaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
 
         Integer taskToMovePresentationOrder = taskToMove.getPresentationOrder();
-        Task stackedTask = taskRepository.findById(task2Id)
+        Task stackedTask = taskRepository.findById(task2Id) // tarefa em que a tarefa que foi movida foi colocada por cima
                 .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada"));
 
         Integer stackedTaskPresentationOrder = stackedTask.getPresentationOrder();
 
+        // caso o valor de presentationOrder da tarefa arrastada seja maior que a tarefa em baixo dela (moveUp)
         if (taskToMovePresentationOrder > stackedTaskPresentationOrder) {
-
+            //armazena todas as tarefas com presentationOrder entre os valores da com taskId e task2Id
             List<Task> tasksToShift = taskRepository.findByPresentationOrderBetween(
                     stackedTaskPresentationOrder, taskToMovePresentationOrder - 1);
 
@@ -173,6 +180,7 @@ public class TaskService implements ITaskService {
             }
 
             taskToMove.setPresentationOrder(stackedTaskPresentationOrder);
+            // caso o valor de presentationOrder da tarefa arrastada seja menor que a tarefa em baixo dela (moveDown)
         } else if (taskToMovePresentationOrder < stackedTaskPresentationOrder) {
 
             List<Task> tasksToShift = taskRepository.findByPresentationOrderBetween(
@@ -189,8 +197,6 @@ public class TaskService implements ITaskService {
         taskRepository.save(taskToMove);
     }
 
-
-
     private void swapOrders(Task task1, Task task2) {
         Integer tempOrder = task1.getPresentationOrder();
         task1.setPresentationOrder(task2.getPresentationOrder());
@@ -200,8 +206,7 @@ public class TaskService implements ITaskService {
         taskRepository.save(task2);
     }
 
-
-
+    //utilizada na função de deletar
     private void updatePresentationOrder(Integer presentationOrder) {
         List<Task> tasksToUpdate = taskRepository.findByPresentationOrderGreaterThan(presentationOrder);
 
