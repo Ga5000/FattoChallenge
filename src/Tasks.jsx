@@ -146,7 +146,7 @@ function Tasks() {
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 0}
           />
-          <p className="page-data">{`${currentPage + 1}/${totalPages + 1}`}</p>
+          <p className="page-data">{`${currentPage + 1}/${totalPages}`}</p>
           <CustomButton
             text=">"
             onDragOver={(e) => {
@@ -156,7 +156,7 @@ function Tasks() {
             onDragLeave={handleDragEndPageButton}
             onDrop={handleDragEndPageButton}
             onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage + 1 === totalPages + 1}
+            disabled={currentPage + 1 === totalPages}
           />
         </div>
       </div>
