@@ -146,7 +146,7 @@ function Tasks() {
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 0}
           />
-          <p className="page-data">{`${currentPage + 1}/${totalPages}`}</p>
+          <p className="page-data">{`${currentPage + 1}/${totalPages == 0 ? 1 : totalPages}`}</p>
           <CustomButton
             text=">"
             onDragOver={(e) => {
