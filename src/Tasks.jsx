@@ -156,7 +156,7 @@ function Tasks() {
             onDragLeave={handleDragEndPageButton}
             onDrop={handleDragEndPageButton}
             onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage + 1 === totalPages}
+            disabled={currentPage + 1 === totalPages == 0 ? 1 : totalPages}
           />
         </div>
       </div>
