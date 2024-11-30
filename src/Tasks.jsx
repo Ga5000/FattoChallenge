@@ -116,6 +116,17 @@ function Tasks() {
   };
 
   useEffect(() => {
+    const fetchTasksInterval = setInterval(() => {
+      if (tasks.length === 0) {
+        handleGetTasks();
+      }
+    }, 5000);
+  
+    return () => clearInterval(fetchTasksInterval);
+  }, [tasks]);
+  
+
+  useEffect(() => {
     handleGetTasks();
   }, [currentPage, pageSize]);
 
